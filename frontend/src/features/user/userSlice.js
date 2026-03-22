@@ -4,6 +4,7 @@ import {
   getUsersAPI,
   addUserAPI,
   deleteUserAPI,
+  updateUserAPI
 } from "./userAPI";
 
 
@@ -26,6 +27,18 @@ export const deleteUser = createAsyncThunk(
   async (id) => {
     await deleteUserAPI(id);
     return id;
+  }
+);
+
+export const editUser = createAsyncThunk(
+  "users/editUser",
+  async ({ id, data }) => {
+    const updatedUser = await updateUserAPI(
+      id,
+      data
+    );
+
+    return updatedUser;
   }
 );
 
@@ -60,7 +73,14 @@ const userSlice = createSlice({
             state.users = state.users.filter(
             (u) => u._id !== action.payload
             );
-        });
+        })
+        .addCase(editUser.fulfilled, (state, action) => {
+        const updatedUser = action.payload;
+
+        state.users = state.users.map((u) =>
+          u._id === updatedUser._id ? updatedUser : u
+        );
+      })
     },
 })
 

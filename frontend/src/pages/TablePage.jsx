@@ -1,10 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  fetchUsers,
-  deleteUser,
-} from "../features/user/userSlice";
 
 import {
   Table,
@@ -17,9 +13,28 @@ import {
   Typography,
   Box,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
+import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
+import {
+  fetchUsers,
+  deleteUser,
+  editUser,
+} from "../features/user/userSlice";
+
+import InputField from "../components/Common/InputField";
+import AgeField from "../components/Common/AgeField";
+import EmailField from "../components/Common/EmailField";
+import PhoneField from "../components/Common/PhoneField";
+import Loader from "../components/Common/Loader";
+import EmptyState from "../components/Common/EmptyState";
 
 function TablePage() {
   const dispatch = useDispatch();
@@ -28,12 +43,98 @@ function TablePage() {
     (state) => state.users
   );
 
+  const [open, setOpen] = useState(false);
+  const [editId, setEditId] = useState(null);
+
+  const [editData, setEditData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    age: "",
+    comments: "",
+  });
+
+  const [editErrors, setEditErrors] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    age: "",
+    comments: "",
+  });
+
+  const validateEdit = () => {
+  let temp = {};
+
+  if (!editData.name?.trim())
+    temp.name = "Name required";
+  else if (editData.name.length < 3)
+    temp.name = "Min 3 chars";
+
+  if (!editData.email?.trim())
+    temp.email = "Email required";
+  else if (
+    !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
+      editData.email
+    )
+  )
+    temp.email = "Invalid email";
+
+  if (!editData.phone?.trim())
+    temp.phone = "Phone required";
+  else if (!/^[0-9]{10}$/.test(editData.phone))
+    temp.phone = "10 digit phone";
+
+  if (editData.age === "")
+    temp.age = "Age required";
+  else if (
+    editData.age < 0 ||
+    editData.age > 150
+  )
+    temp.age = "0-150 only";
+
+  if (!editData.comments?.trim())
+    temp.comments = "Comments required";
+
+  setEditErrors(temp);
+
+  return Object.keys(temp).length === 0;
+};
+
+
+
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
 
   const handleDelete = (id) => {
     dispatch(deleteUser(id));
+  };
+
+  const handleEdit = (user) => {
+    setEditId(user._id);
+    setEditData(user);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleChange = (e) => {
+    setEditData({
+      ...editData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSave = () => {
+    // dispatch to be added
+    if (!validateEdit()) return;
+    console.log(editData);
+    dispatch(editUser({ 
+      id: editId ,
+      data:editData}))
+    setOpen(false);
   };
 
   return (
@@ -63,15 +164,9 @@ function TablePage() {
         </Typography>
 
         {loading ? (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              mt: 3,
-            }}
-          >
-            <CircularProgress />
-          </Box>
+          <Loader text="Fetching users..." />
+        ) : users.length === 0 ? (
+          <EmptyState message="No users found" />
         ) : (
           <Table>
             <TableHead>
@@ -96,36 +191,19 @@ function TablePage() {
                   Comments
                 </TableCell>
                 <TableCell sx={{ color: "white" }}>
-                  Delete
+                  Action
                 </TableCell>
               </TableRow>
             </TableHead>
 
             <TableBody>
               {users.map((u) => (
-                <TableRow
-                  key={u._id}
-                  hover
-                >
-                  <TableCell>
-                    {u.name}
-                  </TableCell>
-
-                  <TableCell>
-                    {u.email}
-                  </TableCell>
-
-                  <TableCell>
-                    {u.phone}
-                  </TableCell>
-
-                  <TableCell>
-                    {u.age}
-                  </TableCell>
-
-                  <TableCell>
-                    {u.comments}
-                  </TableCell>
+                <TableRow key={u._id} hover>
+                  <TableCell>{u.name}</TableCell>
+                  <TableCell>{u.email}</TableCell>
+                  <TableCell>{u.phone}</TableCell>
+                  <TableCell>{u.age}</TableCell>
+                  <TableCell>{u.comments}</TableCell>
 
                   <TableCell>
                     <IconButton
@@ -136,6 +214,15 @@ function TablePage() {
                     >
                       <DeleteIcon />
                     </IconButton>
+
+                    <IconButton
+                      color="primary"
+                      onClick={() =>
+                        handleEdit(u)
+                      }
+                    >
+                      <ModeEditOutlineRoundedIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
@@ -143,6 +230,102 @@ function TablePage() {
           </Table>
         )}
       </Paper>
+
+      {/* EDIT */}
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        fullWidth
+      >
+        <DialogTitle>Edit User</DialogTitle>
+
+        <DialogContent>
+
+          <InputField
+          label="Name"
+          name="name"
+          value={editData.name || ""}
+          onChange={handleChange}
+          error={!!editErrors.name}
+          helperText={editErrors.name}
+        />
+
+        <EmailField
+          label="Email"
+          name="email"
+          value={editData.email || ""}
+          onChange={handleChange}
+          error={!!editErrors.email}
+          helperText={editErrors.email}
+        />
+
+        <PhoneField
+          name="phone"
+          value={editData.phone || ""}
+          onChange={handleChange}
+          error={!!editErrors.phone}
+          helperText={editErrors.phone}
+        />
+
+        <AgeField
+          name="age"
+          value={editData.age || ""}
+          onChange={(e) => {
+            let value = e.target.value;
+
+            if (value === "") {
+              setEditData({
+                ...editData,
+                age: "",
+              });
+              return;
+            }
+
+            value = Number(value);
+
+            if (value >= 0 && value <= 150) {
+              setEditData({
+                ...editData,
+                age: value,
+              });
+            }
+          }}
+          inputProps={{ min: 0, max: 150 }}
+          type="number"
+          error={!!editErrors.age}
+          helperText={editErrors.age}
+        />
+
+        <InputField
+          label="Comments"
+          name="comments"
+          value={editData.comments || ""}
+          onChange={handleChange}
+          multiline
+          rows={3}
+          error={!!editErrors.comments}
+          helperText={editErrors.comments}
+        />
+
+        </DialogContent>
+
+        <DialogActions>
+
+          <Button onClick={handleClose}>
+            Cancel
+          </Button>
+
+          <Button
+            variant="contained"
+            onClick={handleSave}
+          >
+            Save
+          </Button>
+
+        </DialogActions>
+      </Dialog>
+
     </Box>
   );
 }
