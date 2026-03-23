@@ -33,6 +33,7 @@ export const deleteUser = createAsyncThunk(
 export const editUser = createAsyncThunk(
   "users/editUser",
   async ({ id, data }) => {
+    await new Promise(res => setTimeout(res, 1000));
     const updatedUser = await updateUserAPI(
       id,
       data

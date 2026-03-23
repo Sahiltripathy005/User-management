@@ -2,7 +2,7 @@ import { Box, CircularProgress } from '@mui/material'
 import { Typography } from "@mui/material";
 import React from 'react'
 
-function Loader({text = "Loading..."}) {
+const  Loader = ({text = "Loading..."})=>{
   return (
     <Box
     sx={{

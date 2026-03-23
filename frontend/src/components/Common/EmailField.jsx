@@ -3,7 +3,7 @@ import InputField from './InputField'
 
 function EmailField(props) {
   return (
-    <InputField typee = "email" name = "Email" 
+    <InputField type = "email" name = "Email" 
     {...props}>
     </InputField>
   )

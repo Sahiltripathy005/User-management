@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
+import { toast } from "react-toastify";
 
 import {
   Table,
@@ -36,7 +36,7 @@ import PhoneField from "../components/Common/PhoneField";
 import Loader from "../components/Common/Loader";
 import EmptyState from "../components/Common/EmptyState";
 
-function TablePage() {
+const  TablePage = () =>{
   const dispatch = useDispatch();
 
   const { users, loading } = useSelector(
@@ -106,8 +106,14 @@ function TablePage() {
     dispatch(fetchUsers());
   }, [dispatch]);
 
-  const handleDelete = (id) => {
-    dispatch(deleteUser(id));
+  const handleDelete = async (id) => {
+    try {
+      await deleteUserToast(
+        dispatch(deleteUser(id)).unwrap()
+      );
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleEdit = (user) => {
@@ -127,14 +133,54 @@ function TablePage() {
     });
   };
 
-  const handleSave = () => {
-    // dispatch to be added
+  const handleSave = async () => {
     if (!validateEdit()) return;
-    console.log(editData);
-    dispatch(editUser({ 
-      id: editId ,
-      data:editData}))
-    setOpen(false);
+
+    try {
+      await editUserToast(
+        dispatch(editUser({
+          id: editId,
+          data: editData
+        })).unwrap()
+      );
+
+      setOpen(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const showPromiseToast = (promise, messages) => {
+    return toast.promise(promise, {
+      pending: {
+        render: () => messages.pending,
+        icon: "⏳",
+      },
+      success: {
+        render: () => messages.success,
+        icon: "✅",
+      },
+      error: {
+        render: () => messages.error,
+        icon: "❌",
+      },
+    });
+  };
+
+  const deleteUserToast = (promise) => {
+    return showPromiseToast(promise, {
+      pending: "Deleting user...",
+      success: "User deleted successfully!",
+      error: "Failed to delete user",
+    });
+  };
+
+  const editUserToast = (promise) => {
+    return showPromiseToast(promise, {
+      pending: "Updating user...",
+      success: "User updated successfully!",
+      error: "Failed to update user",
+    });
   };
 
   return (

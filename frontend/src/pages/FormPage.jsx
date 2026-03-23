@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-
+import { toast } from "react-toastify";
 import { addUser } from "../features/user/userSlice";
 
 import {
@@ -87,8 +87,6 @@ function FormPage() {
 
     if (age === "")
       temp.age = "Age required";
-    else if (!/^[0-9]+$/.test(age))
-      temp.age = "Number only";
 
     if (!comments.trim())
       temp.comments = "Comments required";
@@ -103,7 +101,7 @@ function FormPage() {
 
     if (!validate()) return;
 
-    await dispatch(
+    const res = await dispatch(
       addUser({
         name,
         email,
@@ -112,23 +110,49 @@ function FormPage() {
         comments,
       })
     );
+    
+    console.log(res);
+    if(!(res.error)){
+      successToast();
+      setName("");
+      setEmail("");
+      setPhone("");
+      setAge("");
+      setComments("");
+      setNameError("");
+      setEmailError("");
+      setErrors({
+        name: "",
+        email: "",
+        phone: "",
+        age: "",
+        comments: "",
+      });
 
-    setName("");
-    setEmail("");
-    setPhone("");
-    setAge("");
-    setComments("");
-    setNameError("");
-    setEmailError("");
-    setErrors({
-      name: "",
-      email: "",
-      phone: "",
-      age: "",
-      comments: "",
-    });
-  };
+    }else{
+      errorToast();
+    }
+  }
 
+const successToast = () => {
+  toast.success("User added successfully!", {
+    position: "top-right",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    theme: "colored",
+  });
+};
+
+const errorToast = () => {
+  toast.error("Failed to add user. Try again.", {
+    position: "top-right",
+    autoClose: 3000,
+    theme: "colored",
+  });
+};
 
   return (
     <Box
@@ -177,12 +201,10 @@ function FormPage() {
               setEmail(e.target.value)
             }
             error={
-              !!errors.email ||
-              !!emailError
+              !!errors.email || !!emailError
             }
             helperText={
-              errors.email ||
-              emailError
+              errors.email || emailError
             }
           />
 
@@ -212,7 +234,7 @@ function FormPage() {
                 setAge(value);
               }
             }}
-            inputProps={{ max: 150, min: 0 }}
+            // inputProps={{ max: 150, min: 0 }}
             type="number"
             error={!!errors.age}
             helperText={errors.age}

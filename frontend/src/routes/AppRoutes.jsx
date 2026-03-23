@@ -1,12 +1,14 @@
+import { ToastContainer, toast } from 'react-toastify';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Layout from "../components/Layout";
 import FormPage from "../pages/FormPage";
 import TablePage from "../pages/TablePage";
 
 function AppRoutes() {
   return (
+    <>
     <BrowserRouter>
+    <ToastContainer/>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<FormPage />} />
@@ -14,6 +16,7 @@ function AppRoutes() {
         </Route>
       </Routes>
     </BrowserRouter>
+    </>
   );
 }
 
