@@ -1,13 +1,34 @@
 import {
   AppBar,
   Toolbar,
-  Button,
   Typography,
   Box,
+  Avatar,
+  Menu,
+  MenuItem,
+  IconButton,
 } from "@mui/material";
-import { Link } from "react-router-dom";
+
+import { useState } from "react";
 
 function Header() {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  // dummy user (later from auth)
+  const user = {
+    name: "Sahil",
+  };
+
   return (
     <AppBar
       position="static"
@@ -28,7 +49,7 @@ function Header() {
           }}
         />
 
-        {/* Name */}
+        {/* App Name */}
         <Typography
           variant="h6"
           sx={{ flexGrow: 1 }}
@@ -36,21 +57,40 @@ function Header() {
           User Manager Pro
         </Typography>
 
-        <Button
-          color="inherit"
-          component={Link}
-          to="/"
-        >
-          Form
-        </Button>
+        {/* USER SECTION */}
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          
+          <Typography mr={1}>
+            {user.name}
+          </Typography>
 
-        <Button
-          color="inherit"
-          component={Link}
-          to="/table"
-        >
-          Table
-        </Button>
+          <IconButton onClick={handleClick}>
+            <Avatar>
+              {user.name[0]}
+            </Avatar>
+          </IconButton>
+
+          {/* DROPDOWN MENU */}
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={handleClose}>
+              Profile
+            </MenuItem>
+
+            <MenuItem
+              onClick={() => {
+                localStorage.removeItem("token");
+                handleClose();
+              }}
+            >
+              Logout
+            </MenuItem>
+          </Menu>
+
+        </Box>
       </Toolbar>
     </AppBar>
   );

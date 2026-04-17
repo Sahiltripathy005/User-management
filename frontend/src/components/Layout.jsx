@@ -1,5 +1,6 @@
 import Header from "./Header";
 import Footer from "./Footer";
+import Sidebar from "./Sidebar"; // NEW
 import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 
@@ -16,13 +17,25 @@ function Layout() {
     >
       <Header />
 
+      {/* MAIN CONTENT WITH SIDEBAR */}
       <Box
         sx={{
+          display: "flex",
           flex: 1,
-          p: 2,
         }}
       >
-        <Outlet />
+        {/* SIDEBAR */}
+        <Sidebar />
+
+        {/* PAGE CONTENT */}
+        <Box
+          sx={{
+            flex: 1,
+            p: 2,
+          }}
+        >
+          <Outlet />
+        </Box>
       </Box>
 
       <Footer />
