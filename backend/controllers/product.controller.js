@@ -71,3 +71,23 @@ export const updateProduct = async (req, res) => {
     });
   }
 };
+
+export const deleteProduct = async (
+req,
+res
+) => {
+try {
+await Product.findByIdAndDelete(
+req.params.id
+);
+
+res.json({
+  message: "Deleted successfully",
+});
+
+} catch (err) {
+res.status(500).json({
+message: "Delete failed",
+});
+}
+};

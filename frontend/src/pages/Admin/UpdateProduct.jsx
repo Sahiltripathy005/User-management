@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import {
   fetchProducts,
   editProduct,
 } from "../../features/product/productSlice";
+import CommonModal from "../../components/Common/CommonModal";
 
 import {
   Table,
@@ -26,6 +26,40 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import InputField from "../../components/Common/InputField";
 import ContainedButton from "../../components/Common/ContainedButton";
+
+const productFields = [
+  {
+    name: "name",
+    component: InputField,
+    props: {
+      label: "Product Name",
+    },
+  },
+  {
+    name: "price",
+    component: InputField,
+    props: {
+      label: "Price",
+    },
+  },
+  {
+    name: "image",
+    component: InputField,
+    props: {
+      label: "Image URL",
+    },
+  },
+  {
+    name: "description",
+    component: InputField,
+    props: {
+      label: "Description",
+      multiline: true,
+      rows: 3,
+    },
+  },
+];
+
 
 function UpdateProduct() {
   const dispatch = useDispatch();
@@ -127,49 +161,16 @@ function UpdateProduct() {
           </TableBody>
         </Table>
 
-        <Dialog open={open} onClose={handleClose} fullWidth>
-          <DialogTitle>Edit Product</DialogTitle>
-
-          <DialogContent>
-            <InputField
-              label="Name"
-              name="name"
-              value={editData.name}
-              onChange={handleChange}
-            />
-
-            <InputField
-              label="Price"
-              name="price"
-              value={editData.price}
-              onChange={handleChange}
-            />
-
-            <InputField
-              label="Image URL"
-              name="image"
-              value={editData.image}
-              onChange={handleChange}
-            />
-
-            <InputField
-              label="Description"
-              name="description"
-              value={editData.description}
-              onChange={handleChange}
-            />
-          </DialogContent>
-
-          <DialogActions>
-            <ContainedButton onClick={handleClose}>
-              Cancel
-            </ContainedButton>
-
-            <ContainedButton onClick={handleSave}>
-              Save
-            </ContainedButton>
-          </DialogActions>
-        </Dialog>
+        <CommonModal
+          open={open}
+          handleClose={handleClose}
+          title="Edit Product"
+          fields={productFields}
+          data={editData}
+          onChange={handleChange}
+          onSubmit={handleSave}
+          submitText="Save"
+          />
       </Paper>
     </Box>
   );

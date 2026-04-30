@@ -11,23 +11,64 @@ import {
 
 import { useState } from "react";
 
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
+
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  logoutUser,
+} from "../features/auth/authSlice";
+
 function Header() {
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorEl, setAnchorEl] =
+    useState(null);
 
   const open = Boolean(anchorEl);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+  const dispatch =
+    useDispatch();
+
+  const navigate =
+    useNavigate();
+
+  const { user } =
+    useSelector(
+      (state) =>
+        state.auth
+    );
+
+  const handleClick = (
+    event
+  ) => {
+    setAnchorEl(
+      event.currentTarget
+    );
   };
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
-  // dummy user (later from auth)
-  const user = {
-    name: "Sahil",
+  const handleProfile = () => {
+    navigate("/profile");
+    handleClose();
   };
+
+  const handleLogout =
+    async () => {
+      await dispatch(
+        logoutUser()
+      );
+
+      handleClose();
+
+      navigate("/login");
+    };
 
   return (
     <AppBar
@@ -38,59 +79,80 @@ function Header() {
       }}
     >
       <Toolbar>
-        {/* Logo */}
+        {/* LOGO */}
         <Box
           sx={{
             width: 35,
             height: 35,
             borderRadius: "50%",
-            background: "white",
-            mr: 1,
+            background:
+              "white",
+            mr: 2,
           }}
         />
 
-        {/* App Name */}
+        {/* TITLE */}
         <Typography
           variant="h6"
-          sx={{ flexGrow: 1 }}
+          sx={{
+            flexGrow: 1,
+          }}
         >
           User Manager Pro
         </Typography>
 
-        {/* USER SECTION */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          
-          <Typography mr={1}>
-            {user.name}
-          </Typography>
-
-          <IconButton onClick={handleClick}>
-            <Avatar>
-              {user.name[0]}
-            </Avatar>
-          </IconButton>
-
-          {/* DROPDOWN MENU */}
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
+        {/* USER MENU */}
+        {user && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems:
+                "center",
+            }}
           >
-            <MenuItem onClick={handleClose}>
-              Profile
-            </MenuItem>
+            <Typography mr={1}>
+              {user.name}
+            </Typography>
 
-            <MenuItem
-              onClick={() => {
-                localStorage.removeItem("token");
-                handleClose();
-              }}
+            <IconButton
+              onClick={
+                handleClick
+              }
             >
-              Logout
-            </MenuItem>
-          </Menu>
+              <Avatar>
+                {
+                  user.name[0]
+                }
+              </Avatar>
+            </IconButton>
 
-        </Box>
+            <Menu
+              anchorEl={
+                anchorEl
+              }
+              open={open}
+              onClose={
+                handleClose
+              }
+            >
+              <MenuItem
+                onClick={
+                  handleProfile
+                }
+              >
+                Profile
+              </MenuItem>
+
+              <MenuItem
+                onClick={
+                  handleLogout
+                }
+              >
+                Logout
+              </MenuItem>
+            </Menu>
+          </Box>
+        )}
       </Toolbar>
     </AppBar>
   );

@@ -5,7 +5,7 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-
+import FallbackImage from "../FallbackImage";
 function ProductCard({
   title,
   price,
@@ -25,11 +25,14 @@ function ProductCard({
       }}
     >
       {/* IMAGE */}
-      <CardMedia
-        component="img"
-        height="150"
-        image={image}
+      <FallbackImage
+        src={image}
         alt={title}
+        style={{
+          width: "100%",
+          height: "150px",
+          objectFit: "cover",
+        }}
       />
 
       <CardContent>

@@ -1,24 +1,150 @@
-import { Box, Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import {
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon,
+  IconButton,
+  Box,
+  Divider,
+} from "@mui/material";
 
-function Sidebar() {
+import {
+  useSelector,
+} from "react-redux";
+
+import {
+  Link,
+} from "react-router-dom";
+
+import MenuIcon from "@mui/icons-material/Menu";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import PeopleIcon from "@mui/icons-material/People";
+
+function SideBar({
+  open,
+  setOpen,
+}) {
+  const { user } =
+    useSelector(
+      (state) =>
+        state.auth
+    );
+
+  const drawerWidth =
+    open ? 240 : 64;
+
   return (
-    <Box
+    <Drawer
+      variant="permanent"
       sx={{
-        width: 200,
-        p: 2,
-        borderRight: "1px solid #ddd",
+        width:
+          drawerWidth,
+        flexShrink: 0,
+
+        "& .MuiDrawer-paper":
+          {
+            width:
+              drawerWidth,
+            overflowX:
+              "hidden",
+            transition:
+              "width 0.3s ease",
+            boxSizing:
+              "border-box",
+          },
       }}
     >
-      <Button fullWidth component={Link} to="/products">
-        Products
-      </Button>
+      {/* TOGGLE BUTTON */}
+      <Box
+        sx={{
+          height: 64,
+          display: "flex",
+          alignItems: "center",
+          px: 1,
+        }}
+      >
+        <IconButton
+          onClick={() =>
+            setOpen(!open)
+          }
+          sx={{
+            ml: 0,
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+      </Box>
 
-      <Button fullWidth component={Link} to="/admin">
-        Admin
-      </Button>
-    </Box>
+      <Divider />
+
+      <List>
+        {/* PRODUCTS */}
+        <ListItemButton
+          component={Link}
+          to="/products"
+        >
+          <ListItemIcon>
+            <InventoryIcon />
+          </ListItemIcon>
+
+          {open && (
+            <ListItemText primary="Products" />
+          )}
+        </ListItemButton>
+
+        {/* PROFILE */}
+        <ListItemButton
+          component={Link}
+          to="/profile"
+        >
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+
+          {open && (
+            <ListItemText primary="Profile" />
+          )}
+        </ListItemButton>
+
+        {/* ADMIN ONLY */}
+        {user?.role ===
+          "admin" && (
+          <>
+            <ListItemButton
+              component={
+                Link
+              }
+              to="/user"
+            >
+              <ListItemIcon>
+                <PeopleIcon />
+              </ListItemIcon>
+
+              {open && (
+                <ListItemText primary="User Management" />
+              )}
+            </ListItemButton>
+
+            <ListItemButton
+              component={
+                Link
+              }
+              to="/products/manage"
+            >
+              <ListItemIcon>
+                <InventoryIcon />
+              </ListItemIcon>
+
+              {open && (
+                <ListItemText primary="Product Management" />
+              )}
+            </ListItemButton>
+          </>
+        )}
+      </List>
+    </Drawer>
   );
 }
 
-export default Sidebar;
+export default SideBar;

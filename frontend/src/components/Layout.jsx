@@ -1,44 +1,47 @@
+import { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
-import Sidebar from "./Sidebar"; // NEW
+import Sidebar from "./SideBar";
+
 import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 
 function Layout() {
+  const [sidebarOpen, setSidebarOpen] =
+    useState(false);
+
   return (
     <Box
       sx={{
-        minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
-        background:
-          "linear-gradient(to right, #e3f2fd, #f5f5f5)",
+        minHeight: "100vh",
       }}
     >
-      <Header />
+      <Sidebar
+        open={sidebarOpen}
+        setOpen={setSidebarOpen}
+      />
 
-      {/* MAIN CONTENT WITH SIDEBAR */}
       <Box
         sx={{
-          display: "flex",
           flex: 1,
+          display: "flex",
+          flexDirection: "column",
         }}
       >
-        {/* SIDEBAR */}
-        <Sidebar />
+        <Header />
 
-        {/* PAGE CONTENT */}
         <Box
           sx={{
             flex: 1,
-            p: 2,
+            p: 3,
           }}
         >
           <Outlet />
         </Box>
-      </Box>
 
-      <Footer />
+        <Footer />
+      </Box>
     </Box>
   );
 }

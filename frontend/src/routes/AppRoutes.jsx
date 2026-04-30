@@ -1,48 +1,101 @@
 import { ToastContainer } from "react-toastify";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import {
+BrowserRouter,
+Routes,
+Route,
+Navigate,
+} from "react-router-dom";
 
 import Layout from "../components/Layout";
-import FormPage from "../pages/FormPage";
-import TablePage from "../pages/TablePage";
 
-// NEW imports
+import Login from "../pages/Auth/Login";
+import Signup from "../pages/Auth/Signup";
+
+import Profile from "../pages/Profile";
+
 import ProductList from "../pages/Products/ProductList";
 import ProductDetail from "../pages/Products/ProductDetail";
-import AdminHome from "../pages/Admin/AdminHome";
-import CreateProduct from "../pages/Admin/CreateProduct";
-import UpdateProduct from "../pages/Admin/UpdateProduct";
+
+import UserManagement from "../pages/UserManagement";
+import ProductManagement from "../pages/ProductManagement";
+
+import ProtectedRoute from "../components/auth/ProtectedRoute";
+import AdminRoute from "../components/auth/AdminRoute";
 
 function AppRoutes() {
-  return (
-    <>
-      <BrowserRouter>
-        <ToastContainer />
+return ( <BrowserRouter> <ToastContainer />
 
-        <Routes>
-          <Route path="/" element={<Layout />}>
+ 
+  <Routes>
+    {/* PUBLIC */}
+    <Route
+      path="/"
+      element={
+        <Navigate to="/login" />
+      }
+    />
 
-            {/* DEFAULT */}
-            <Route index element={<FormPage />} />
+    <Route
+      path="/login"
+      element={<Login />}
+    />
 
-            {/* EXISTING */}
-            <Route path="table" element={<TablePage />} />
+    <Route
+      path="/signup"
+      element={<Signup />}
+    />
 
-            {/* PRODUCTS (PUBLIC) */}
-            <Route path="products" element={<ProductList />} />
-            <Route path="products/:id" element={<ProductDetail />} />
+    {/* PROTECTED */}
+    <Route
+      element={
+        <ProtectedRoute>
+          <Layout />
+        </ProtectedRoute>
+      }
+    >
+      {/* PROFILE */}
+      <Route
+        path="/profile"
+        element={<Profile />}
+      />
 
-            {/* ADMIN */}
-            <Route path="admin" element={<AdminHome />} />
-            <Route path="admin/add-user" element={<FormPage />} />
+      {/* PRODUCTS */}
+      <Route
+        path="/products"
+        element={<ProductList />}
+      />
 
-            <Route path="admin/create-product" element={<CreateProduct />} />
-            <Route path="admin/update-product" element={<UpdateProduct />} />
+      <Route
+        path="/products/:id"
+        element={<ProductDetail />}
+      />
 
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
+      {/* ADMIN ONLY USERS */}
+      <Route
+        path="/user"
+        element={
+          <AdminRoute>
+            <UserManagement />
+          </AdminRoute>
+        }
+      />
+
+      {/* ADMIN ONLY PRODUCTS */}
+      <Route
+        path="/products/manage"
+        element={
+          <AdminRoute>
+            <ProductManagement />
+          </AdminRoute>
+        }
+      />
+    </Route>
+  </Routes>
+</BrowserRouter>
+ 
+
+);
 }
 
 export default AppRoutes;

@@ -14,6 +14,7 @@ import EmailField from "../components/Common/EmailField";
 import PhoneField from "../components/Common/PhoneField";
 import AgeField from "../components/Common/AgeField";
 import ContainedButton from "../components/Common/ContainedButton";
+import AdminBackButton from "../components/Common/admin/AdminBackButton";
 
 function FormPage() {
   const dispatch = useDispatch();
@@ -32,12 +33,17 @@ function FormPage() {
     comments: "",
   });
 
-  const [nameError, setNameError] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [nameError, setNameError] =
+    useState("");
+  const [emailError, setEmailError] =
+    useState("");
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (name.length > 0 && name.length < 3) {
+      if (
+        name.length > 0 &&
+        name.length < 3
+      ) {
         setNameError(
           "Name must be at least 3 characters"
         );
@@ -69,31 +75,39 @@ function FormPage() {
   const validate = () => {
     let temp = {};
 
-    if (!name.trim()) temp.name = "Name required";
+    if (!name.trim())
+      temp.name = "Name required";
 
-    if (!email.trim())
+    if (!email.trim()) {
       temp.email = "Email required";
-    else if (
+    } else if (
       !/^[0-9A-Z._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
         email
       )
-    )
+    ) {
       temp.email = "Invalid email";
+    }
 
-    if (!phone.trim())
+    if (!phone.trim()) {
       temp.phone = "Phone required";
-    else if (!/^[0-9]{10}$/.test(phone))
+    } else if (
+      !/^[0-9]{10}$/.test(phone)
+    ) {
       temp.phone = "10 digit phone";
+    }
 
     if (age === "")
       temp.age = "Age required";
 
     if (!comments.trim())
-      temp.comments = "Comments required";
+      temp.comments =
+        "Comments required";
 
     setErrors(temp);
 
-    return Object.keys(temp).length === 0;
+    return (
+      Object.keys(temp).length === 0
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -110,17 +124,21 @@ function FormPage() {
         comments,
       })
     );
-    
+
     console.log(res);
-    if(!(res.error)){
+
+    if (!res.error) {
       successToast();
+
       setName("");
       setEmail("");
       setPhone("");
       setAge("");
       setComments("");
+
       setNameError("");
       setEmailError("");
+
       setErrors({
         name: "",
         email: "",
@@ -128,31 +146,36 @@ function FormPage() {
         age: "",
         comments: "",
       });
-
-    }else{
+    } else {
       errorToast();
     }
-  }
+  };
 
-const successToast = () => {
-  toast.success("User added successfully!", {
-    position: "top-right",
-    autoClose: 2000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    theme: "colored",
-  });
-};
+  const successToast = () => {
+    toast.success(
+      "User added successfully!",
+      {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      }
+    );
+  };
 
-const errorToast = () => {
-  toast.error("Failed to add user. Try again.", {
-    position: "top-right",
-    autoClose: 3000,
-    theme: "colored",
-  });
-};
+  const errorToast = () => {
+    toast.error(
+      "Failed to add user. Try again.",
+      {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      }
+    );
+  };
 
   return (
     <Box
@@ -170,6 +193,8 @@ const errorToast = () => {
           borderRadius: 3,
         }}
       >
+        <AdminBackButton />
+
         <Typography
           variant="h5"
           align="center"
@@ -184,10 +209,13 @@ const errorToast = () => {
             label="Name"
             name="name"
             value={name}
-            onChange={(e)=>
+            onChange={(e) =>
               setName(e.target.value)
             }
-            error={!!errors.name || !!nameError}
+            error={
+              !!errors.name ||
+              !!nameError
+            }
             helperText={
               errors.name || nameError
             }
@@ -201,7 +229,8 @@ const errorToast = () => {
               setEmail(e.target.value)
             }
             error={
-              !!errors.email || !!emailError
+              !!errors.email ||
+              !!emailError
             }
             helperText={
               errors.email || emailError
@@ -222,19 +251,23 @@ const errorToast = () => {
             name="age"
             value={age}
             onChange={(e) => {
-              let value = e.target.value;
+              let value =
+                e.target.value;
 
-              if(value === ""){
+              if (value === "") {
                 setAge("");
                 return;
               }
+
               value = Number(value);
 
-              if (value >= 0 && value <= 150) {
+              if (
+                value >= 0 &&
+                value <= 150
+              ) {
                 setAge(value);
               }
             }}
-            // inputProps={{ max: 150, min: 0 }}
             type="number"
             error={!!errors.age}
             helperText={errors.age}
@@ -245,7 +278,9 @@ const errorToast = () => {
             name="comments"
             value={comments}
             onChange={(e) =>
-              setComments(e.target.value)
+              setComments(
+                e.target.value
+              )
             }
             multiline
             rows={3}
@@ -255,9 +290,7 @@ const errorToast = () => {
             }
           />
 
-          <ContainedButton
-            type="submit"
-          >
+          <ContainedButton type="submit">
             Submit
           </ContainedButton>
         </form>

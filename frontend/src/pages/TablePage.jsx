@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-
 import {
   Table,
   TableHead,
@@ -35,6 +34,48 @@ import EmailField from "../components/Common/EmailField";
 import PhoneField from "../components/Common/PhoneField";
 import Loader from "../components/Common/Loader";
 import EmptyState from "../components/Common/EmptyState";
+import CommonModal from "../components/Common/CommonModal";
+
+
+const editFields = [
+  {
+    name: "name",
+    component: InputField,
+    props: {
+      label: "Name",
+    },
+  },
+  {
+    name: "email",
+    component: EmailField,
+    props: {
+      label: "Email",
+    },
+  },
+  {
+    name: "phone",
+    component: PhoneField,
+    props: {},
+  },
+  {
+    name: "age",
+    component: AgeField,
+    props: {
+      type: "number",
+      inputProps: { min: 0, max: 150 },
+    },
+  },
+  {
+    name: "comments",
+    component: InputField,
+    props: {
+      label: "Comments",
+      multiline: true,
+      rows: 3,
+    },
+  },
+];
+
 
 const  TablePage = () =>{
   const dispatch = useDispatch();
@@ -279,98 +320,17 @@ const  TablePage = () =>{
 
       {/* EDIT */}
 
-      <Dialog
+      <CommonModal
         open={open}
-        onClose={handleClose}
-        fullWidth
-      >
-        <DialogTitle>Edit User</DialogTitle>
-
-        <DialogContent>
-
-          <InputField
-          label="Name"
-          name="name"
-          value={editData.name || ""}
-          onChange={handleChange}
-          error={!!editErrors.name}
-          helperText={editErrors.name}
-        />
-
-        <EmailField
-          label="Email"
-          name="email"
-          value={editData.email || ""}
-          onChange={handleChange}
-          error={!!editErrors.email}
-          helperText={editErrors.email}
-        />
-
-        <PhoneField
-          name="phone"
-          value={editData.phone || ""}
-          onChange={handleChange}
-          error={!!editErrors.phone}
-          helperText={editErrors.phone}
-        />
-
-        <AgeField
-          name="age"
-          value={editData.age || ""}
-          onChange={(e) => {
-            let value = e.target.value;
-
-            if (value === "") {
-              setEditData({
-                ...editData,
-                age: "",
-              });
-              return;
-            }
-
-            value = Number(value);
-
-            if (value >= 0 && value <= 150) {
-              setEditData({
-                ...editData,
-                age: value,
-              });
-            }
-          }}
-          inputProps={{ min: 0, max: 150 }}
-          type="number"
-          error={!!editErrors.age}
-          helperText={editErrors.age}
-        />
-
-        <InputField
-          label="Comments"
-          name="comments"
-          value={editData.comments || ""}
-          onChange={handleChange}
-          multiline
-          rows={3}
-          error={!!editErrors.comments}
-          helperText={editErrors.comments}
-        />
-
-        </DialogContent>
-
-        <DialogActions>
-
-          <Button onClick={handleClose}>
-            Cancel
-          </Button>
-
-          <Button
-            variant="contained"
-            onClick={handleSave}
-          >
-            Save
-          </Button>
-
-        </DialogActions>
-      </Dialog>
+        handleClose={handleClose}
+        title="Edit User"
+        fields={editFields}
+        data={editData}
+        errors={editErrors}
+        onChange={handleChange}
+        onSubmit={handleSave}
+        submitText="Update"
+      />
 
     </Box>
   );

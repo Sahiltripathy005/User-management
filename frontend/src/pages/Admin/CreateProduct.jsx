@@ -84,7 +84,6 @@ function CreateProduct() {
     }
   };
 
-  // ---------- UI ----------
   return (
     <Box display="flex" justifyContent="center" mt={4}>
       <Paper

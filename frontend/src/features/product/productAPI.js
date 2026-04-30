@@ -1,45 +1,118 @@
-// features/product/productAPI.js
-
-const BASE_URL = "http://localhost:5000/api/v1/products";
+const BASE_URL =
+  "http://localhost:5000/api/v1/products";
 
 // GET all products
-export const fetchProductsAPI = async () => {
-  const res = await fetch(BASE_URL);
+export const fetchProductsAPI =
+  async () => {
+    const res =
+      await fetch(
+        BASE_URL
+      );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch products");
-  }
+    if (!res.ok) {
+      throw new Error(
+        "Failed to fetch products"
+      );
+    }
 
-  return await res.json();
-};
+    return await res.json();
+  };
 
 // GET single product
-export const fetchProductByIdAPI = async (id) => {
-  const res = await fetch(`${BASE_URL}/${id}`);
+export const fetchProductByIdAPI =
+  async (id) => {
+    const res =
+      await fetch(
+        `${BASE_URL}/${id}`
+      );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch product");
-  }
-
-  return await res.json();
-};
-// features/product/productAPI.js
-
-export const createProductAPI = async (data) => {
-  const res = await fetch(
-    "http://localhost:5000/api/v1/products",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
+    if (!res.ok) {
+      throw new Error(
+        "Failed to fetch product"
+      );
     }
-  );
 
-  if (!res.ok) {
-    throw new Error("Failed to create product");
-  }
+    return await res.json();
+  };
 
-  return await res.json();
-};
+// CREATE product
+export const createProductAPI =
+  async (data) => {
+    const res =
+      await fetch(
+        BASE_URL,
+        {
+          method:
+            "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body:
+            JSON.stringify(
+              data
+            ),
+        }
+      );
+
+    if (!res.ok) {
+      throw new Error(
+        "Failed to create product"
+      );
+    }
+
+    return await res.json();
+  };
+
+// UPDATE product
+export const updateProductAPI =
+  async (
+    id,
+    data
+  ) => {
+    const res =
+      await fetch(
+        `${BASE_URL}/${id}`,
+        {
+          method:
+            "PUT",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body:
+            JSON.stringify(
+              data
+            ),
+        }
+      );
+
+    if (!res.ok) {
+      throw new Error(
+        "Update failed"
+      );
+    }
+
+    return await res.json();
+  };
+
+// DELETE product
+export const deleteProductAPI =
+  async (id) => {
+    const res =
+      await fetch(
+        `${BASE_URL}/${id}`,
+        {
+          method:
+            "DELETE",
+        }
+      );
+
+    if (!res.ok) {
+      throw new Error(
+        "Delete failed"
+      );
+    }
+
+    return id;
+  };

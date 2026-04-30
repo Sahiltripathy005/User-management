@@ -1,10 +1,15 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  useDispatch,
+  useSelector,
+} from "react-redux";
 
 import {
   fetchProductById,
 } from "../../features/product/productSlice";
+
+import FallbackImage from "../../components/Common/FallbackImage";
 
 import {
   Box,
@@ -15,22 +20,36 @@ import {
 } from "@mui/material";
 
 function ProductDetail() {
-  const { id } = useParams();
-  const dispatch = useDispatch();
+  const { id } =
+    useParams();
 
-  const { selectedProduct, loading } =
-    useSelector((state) => state.products);
+  const dispatch =
+    useDispatch();
+
+  const {
+    selectedProduct,
+    loading,
+  } = useSelector(
+    (state) =>
+      state.products
+  );
 
   useEffect(() => {
-    dispatch(fetchProductById(id));
+    dispatch(
+      fetchProductById(id)
+    );
   }, [dispatch, id]);
 
-  if (loading || !selectedProduct) {
+  if (
+    loading ||
+    !selectedProduct
+  ) {
     return (
       <Box
         sx={{
           display: "flex",
-          justifyContent: "center",
+          justifyContent:
+            "center",
           mt: 5,
         }}
       >
@@ -43,7 +62,8 @@ function ProductDetail() {
     <Box
       sx={{
         display: "flex",
-        justifyContent: "center",
+        justifyContent:
+          "center",
         mt: 5,
       }}
     >
@@ -54,7 +74,8 @@ function ProductDetail() {
           maxWidth: 900,
           display: "flex",
           borderRadius: 4,
-          overflow: "hidden",
+          overflow:
+            "hidden",
           background:
             "linear-gradient(to right, #f5f7fa, #e3f2fd)",
         }}
@@ -63,20 +84,29 @@ function ProductDetail() {
         <Box
           sx={{
             flex: 1,
-            background: "#fff",
+            background:
+              "#fff",
             display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            alignItems:
+              "center",
+            justifyContent:
+              "center",
             p: 3,
           }}
         >
-          <img
-            src={selectedProduct.image}
-            alt={selectedProduct.name}
+          <FallbackImage
+            src={
+              selectedProduct.image
+            }
+            alt={
+              selectedProduct.name
+            }
             style={{
               width: "100%",
-              maxHeight: "300px",
-              objectFit: "contain",
+              maxHeight:
+                "300px",
+              objectFit:
+                "contain",
             }}
           />
         </Box>
@@ -87,8 +117,10 @@ function ProductDetail() {
             flex: 1,
             p: 4,
             display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
+            flexDirection:
+              "column",
+            justifyContent:
+              "center",
           }}
         >
           {/* NAME */}
@@ -97,7 +129,9 @@ function ProductDetail() {
             fontWeight="bold"
             mb={2}
           >
-            {selectedProduct.name}
+            {
+              selectedProduct.name
+            }
           </Typography>
 
           {/* PRICE */}
@@ -107,7 +141,10 @@ function ProductDetail() {
             fontWeight="bold"
             mb={2}
           >
-            ₹ {selectedProduct.price}
+            ₹{" "}
+            {
+              selectedProduct.price
+            }
           </Typography>
 
           {/* DESCRIPTION */}
@@ -120,8 +157,14 @@ function ProductDetail() {
               "No description available"}
           </Typography>
 
-          {/* ACTION BUTTONS */}
-          <Box sx={{ display: "flex", gap: 2 }}>
+          {/* ACTIONS */}
+          <Box
+            sx={{
+              display:
+                "flex",
+              gap: 2,
+            }}
+          >
             <Button
               variant="contained"
               size="large"
