@@ -1,124 +1,154 @@
 import {
-createSlice,
-createAsyncThunk,
+  createSlice,
+  createAsyncThunk,
 } from "@reduxjs/toolkit";
 
 import {
-signupAPI,
-loginAPI,
-logoutAPI,
-getProfileAPI,
+  signupAPI,
+  loginAPI,
+  logoutAPI,
+  getProfileAPI,
+  updateProfileAPI,
+  changePasswordAPI
 } from "./authAPI";
 
 
+
 export const signupUser =
-createAsyncThunk(
-"auth/signup",
-async (data) => {
-return await signupAPI(
-data
-);
-}
-);
+  createAsyncThunk(
+    "auth/signup",
+    async (data) => {
+      return await signupAPI(
+        data
+      );
+    }
+  );
 
 export const loginUser =
-createAsyncThunk(
-"auth/login",
-async (data) => {
-return await loginAPI(
-data
-);
-}
-);
+  createAsyncThunk(
+    "auth/login",
+    async (data) => {
+      return await loginAPI(
+        data
+      );
+    }
+  );
 
 export const logoutUser =
-createAsyncThunk(
-"auth/logout",
-async () => {
-return await logoutAPI();
-}
-);
+  createAsyncThunk(
+    "auth/logout",
+    async () => {
+      return await logoutAPI();
+    }
+  );
 
 export const fetchProfile =
-createAsyncThunk(
-"auth/profile",
-async () => {
-  return await getProfileAPI();
-}
-);
+  createAsyncThunk(
+    "auth/profile",
+    async () => {
+      return await getProfileAPI();
+    }
+  );
+
+export const updateProfile =
+  createAsyncThunk(
+    "auth/updateProfile",
+    async (data) => {
+      return await updateProfileAPI(
+        data
+      );
+    }
+  );
+
+  export const changePassword =
+  createAsyncThunk(
+    "auth/changePassword",
+    async (data) => {
+      return await changePasswordAPI(
+        data
+      );
+    }
+  );
 
 const authSlice =
-createSlice({
-name: "auth",
+  createSlice({
+    name: "auth",
 
- 
-initialState: {
-  user: null,
-  isAuthenticated: false,
-  loading: true,
-},
 
-reducers: {},
+    initialState: {
+      user: null,
+      isAuthenticated: false,
+      loading: true,
+    },
 
-extraReducers:
-  (builder) => {
-    builder
-      .addCase(
-        loginUser.fulfilled,
-        (
-          state,
-          action
-        ) => {
-          state.user =
-            action.payload.user;
+    reducers: {},
 
-          state.isAuthenticated =
-            true;
-        }
-      )
+    extraReducers:
+      (builder) => {
+        builder
+          .addCase(
+            loginUser.fulfilled,
+            (
+              state,
+              action
+            ) => {
+              state.user =
+                action.payload.user;
 
-      .addCase(
-        logoutUser.fulfilled,
-        (state) => {
-          state.user =
-            null;
+              state.isAuthenticated =
+                true;
+            }
+          )
 
-          state.isAuthenticated =
-            false;
+          .addCase(
+            logoutUser.fulfilled,
+            (state) => {
+              state.user =
+                null;
 
-        }
-      )
+              state.isAuthenticated =
+                false;
 
-      .addCase(
-        fetchProfile.fulfilled,
-        (state, action) => {
-          state.user =
-            action.payload;
+            }
+          )
 
-          state.isAuthenticated =
-            true;
+          .addCase(
+            fetchProfile.fulfilled,
+            (state, action) => {
+              state.user =
+                action.payload;
 
-          state.loading = false;
-        }
-      )
-      .addCase(
-      fetchProfile.pending,
-      (state) => {
-        state.loading = true;
-      }
-    )
-      .addCase(
-      fetchProfile.rejected,
-      (state) => {
-        state.user = null;
-        state.isAuthenticated = false;
-        state.loading = false;
-      }
-    )
-  },
- 
+              state.isAuthenticated =
+                true;
 
-});
+              state.loading = false;
+            }
+          )
+          .addCase(
+            fetchProfile.pending,
+            (state) => {
+              state.loading = true;
+            }
+          )
+          .addCase(
+            fetchProfile.rejected,
+            (state) => {
+              state.user = null;
+              state.isAuthenticated = false;
+              state.loading = false;
+            }
+          )
+          .addCase(
+            updateProfile.fulfilled,
+            (state, action) => {
+              state.user =
+                action.payload;
+            }
+          )
+      },
+
+
+  });
 
 export default
-authSlice.reducer;
+  authSlice.reducer;

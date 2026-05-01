@@ -1,17 +1,11 @@
 import { ToastContainer } from "react-toastify";
 
-import {
-BrowserRouter,
-Routes,
-Route,
-Navigate,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Layout from "../components/Layout";
 
 import Login from "../pages/Auth/Login";
 import Signup from "../pages/Auth/Signup";
-
 import Profile from "../pages/Profile";
 
 import ProductList from "../pages/Products/ProductList";
@@ -24,78 +18,57 @@ import ProtectedRoute from "../components/auth/ProtectedRoute";
 import AdminRoute from "../components/auth/AdminRoute";
 
 function AppRoutes() {
-return ( <BrowserRouter> <ToastContainer />
+  return (
+    <BrowserRouter>
+      <ToastContainer />
 
- 
-  <Routes>
-    {/* PUBLIC */}
-    <Route
-      path="/"
-      element={
-        <Navigate to="/login" />
-      }
-    />
+      <Routes>
+        {/* ROOT */}
+        <Route path="/" element={<Navigate to="/products" replace />} />
 
-    <Route
-      path="/login"
-      element={<Login />}
-    />
+        {/* AUTH */}
+        <Route path="/login" element={<Login />} />
 
-    <Route
-      path="/signup"
-      element={<Signup />}
-    />
+        <Route path="/signup" element={<Signup />} />
 
-    {/* PROTECTED */}
-    <Route
-      element={
-        <ProtectedRoute>
-          <Layout />
-        </ProtectedRoute>
-      }
-    >
-      {/* PROFILE */}
-      <Route
-        path="/profile"
-        element={<Profile />}
-      />
+        {/* PUBLIC ROUTES */}
+        <Route element={<Layout />}>
+          <Route path="/products" element={<ProductList />} />
 
-      {/* PRODUCTS */}
-      <Route
-        path="/products"
-        element={<ProductList />}
-      />
+          <Route path="/products/:id" element={<ProductDetail />} />
+        </Route>
 
-      <Route
-        path="/products/:id"
-        element={<ProductDetail />}
-      />
+        {/* PROTECTED ROUTES */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/profile" element={<Profile />} />
+        </Route>
 
-      {/* ADMIN ONLY USERS */}
-      <Route
-        path="/user"
-        element={
-          <AdminRoute>
-            <UserManagement />
-          </AdminRoute>
-        }
-      />
+        {/* ADMIN ROUTES */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <Layout />
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        >
+          <Route path="/user" element={<UserManagement />} />
 
-      {/* ADMIN ONLY PRODUCTS */}
-      <Route
-        path="/products/manage"
-        element={
-          <AdminRoute>
-            <ProductManagement />
-          </AdminRoute>
-        }
-      />
-    </Route>
-  </Routes>
-</BrowserRouter>
- 
+          <Route path="/products/manage" element={<ProductManagement />} />
+        </Route>
 
-);
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/products" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default AppRoutes;

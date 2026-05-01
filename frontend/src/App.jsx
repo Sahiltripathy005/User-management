@@ -1,16 +1,10 @@
-import {
-  useEffect,
-} from "react";
+import {  useEffect,} from "react";
 
-import {
-  useDispatch,
-} from "react-redux";
+import {  useDispatch,} from "react-redux";
 
 import AppRoutes from "./routes/AppRoutes";
 
-import {
-  fetchProfile,
-} from "./features/auth/authSlice";
+import {  fetchProfile,} from "./features/auth/authSlice";
 
 function App() {
   const dispatch =

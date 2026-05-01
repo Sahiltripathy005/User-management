@@ -7,8 +7,7 @@ import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 
 function Layout() {
-  const [sidebarOpen, setSidebarOpen] =
-    useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <Box
@@ -17,10 +16,7 @@ function Layout() {
         minHeight: "100vh",
       }}
     >
-      <Sidebar
-        open={sidebarOpen}
-        setOpen={setSidebarOpen}
-      />
+      <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
 
       <Box
         sx={{
