@@ -116,25 +116,10 @@ export const loginUser =
         password,
       } = req.body;
 
-      console.log(
-        "EMAIL:",
-        email
-      );
-
-      console.log(
-        "PASSWORD:",
-        password
-      );
-
       const user =
         await User.findOne({
           email,
         });
-
-      console.log(
-        "USER:",
-        user
-      );
 
       if (!user) {
         return res.status(404).json({
@@ -149,11 +134,6 @@ export const loginUser =
           user.password
         );
 
-      console.log(
-        "MATCH:",
-        match
-      );
-
       if (!match) {
         return res.status(400).json({
           message:
@@ -161,21 +141,48 @@ export const loginUser =
         });
       }
 
+      const token =
+        jwt.sign(
+          {
+            id: user._id,
+            role: user.role,
+          },
+          process.env.JWT_SECRET,
+          {
+            expiresIn:
+              process.env.JWT_EXPIRES,
+          }
+        );
+
+      res.cookie(
+        "token",
+        token,
+        {
+          httpOnly: true,
+          secure: false,
+          sameSite:
+            "lax",
+        }
+      );
+
       res.json({
         message:
           "Login successful",
-        user,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email:
+            user.email,
+          role: user.role,
+        },
       });
     } catch (err) {
-      console.log(err);
-
       res.status(500).json({
         message:
           "Login failed",
       });
     }
   };
-
 /* logout */
 
 export const logoutUser =
@@ -198,8 +205,8 @@ async (req, res) => {
 try {
 const user =
 await User.findById(
-req.params.id
-);
+  req.user.id
+).select("-password");
 
   res.json(user);
 } catch (err) {

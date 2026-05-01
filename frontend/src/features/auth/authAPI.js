@@ -80,14 +80,15 @@ return await res.json();
 };
 
 export const getProfileAPI =
-async (id) => {
-const res =
-await fetch(
-`${BASE_URL}/profile/${id}`
-);
+async () => {
+  const res =
+    await fetch(
+      `${BASE_URL}/profile`,
+      {
+        credentials:
+          "include",
+      }
+    );
 
- 
-return await res.json();
- 
-
+  return await res.json();
 };

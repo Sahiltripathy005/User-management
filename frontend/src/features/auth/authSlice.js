@@ -10,12 +10,6 @@ logoutAPI,
 getProfileAPI,
 } from "./authAPI";
 
-const storedUser =
-JSON.parse(
-localStorage.getItem(
-"user"
-)
-) || null;
 
 export const signupUser =
 createAsyncThunk(
@@ -48,10 +42,8 @@ return await logoutAPI();
 export const fetchProfile =
 createAsyncThunk(
 "auth/profile",
-async (id) => {
-return await getProfileAPI(
-id
-);
+async () => {
+  return await getProfileAPI();
 }
 );
 
@@ -61,10 +53,9 @@ name: "auth",
 
  
 initialState: {
-  user: storedUser,
-  isAuthenticated:
-    !!storedUser,
-  loading: false,
+  user: null,
+  isAuthenticated: false,
+  loading: true,
 },
 
 reducers: {},
@@ -83,13 +74,6 @@ extraReducers:
 
           state.isAuthenticated =
             true;
-
-          localStorage.setItem(
-            "user",
-            JSON.stringify(
-              action.payload.user
-            )
-          );
         }
       )
 
@@ -102,22 +86,35 @@ extraReducers:
           state.isAuthenticated =
             false;
 
-          localStorage.removeItem(
-            "user"
-          );
         }
       )
 
       .addCase(
         fetchProfile.fulfilled,
-        (
-          state,
-          action
-        ) => {
+        (state, action) => {
           state.user =
             action.payload;
+
+          state.isAuthenticated =
+            true;
+
+          state.loading = false;
         }
-      );
+      )
+      .addCase(
+      fetchProfile.pending,
+      (state) => {
+        state.loading = true;
+      }
+    )
+      .addCase(
+      fetchProfile.rejected,
+      (state) => {
+        state.user = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+      }
+    )
   },
  
 

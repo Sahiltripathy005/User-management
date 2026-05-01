@@ -11,6 +11,8 @@ import {
   getProfile,
 } from "../controllers/user.controller.js";
 
+import {  verifyToken,} from "../middleware/auth.middleware.js";
+
 const router = express.Router();
 
 /* CRUD */
@@ -31,7 +33,8 @@ router.post("/logout", logoutUser);
 
 /* PROFILE */
 router.get(
-  "/profile/:id",
+  "/profile",
+  verifyToken,
   getProfile
 );
 
