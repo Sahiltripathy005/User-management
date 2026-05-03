@@ -1,155 +1,75 @@
 import { useState } from "react";
-import {
-  Box,
-  Paper,
-  Typography,
-  Link as MuiLink,
-} from "@mui/material";
+import { Box, Paper, Typography, Link as MuiLink } from "@mui/material";
 
-import {
-  useDispatch,
-} from "react-redux";
+import { useDispatch } from "react-redux";
 
-import {
-  useNavigate,
-  Link,
-} from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import ContainedButton from "../../components/Common/ContainedButton";
 import FormBuilder from "../../components/Common/FormBuilder";
-import InputField from "../../components/Common/InputField";
 
-import {
-  validateForm,
-} from "../../utils/validateForm";
+import { validateForm } from "../../utils/validateForm";
 
-import {
-  loginUser,
-} from "../../features/auth/authSlice";
+import { loginUser } from "../../features/auth/authSlice";
 
-import {
-  showSuccess,
-  showError,
-} from "../../utils/toast";
+import { showSuccess, showError } from "../../utils/toast";
 
-const loginFields = [
-  {
-    name: "email",
-    component: InputField,
-    required: true,
-    props: {
-      label: "Email",
-      type: "email",
-    },
-    validate: (value) =>
-      !/\S+@\S+\.\S+/.test(
-        value
-      )
-        ? "Invalid email"
-        : "",
-  },
-  {
-    name: "password",
-    component: InputField,
-    required: true,
-    props: {
-      label: "Password",
-      type: "password",
-    },
-  },
-];
+import loginFields from "../../components/forms/loginFields";
 
 function Login() {
-  const dispatch =
-    useDispatch();
+  const dispatch = useDispatch();
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const [formData,
-    setFormData] =
-    useState({
-      email: "",
-      password: "",
-    });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-  const [errors,
-    setErrors] =
-    useState({});
+  const [errors, setErrors] = useState({});
 
-  const handleChange = (
-    e
-  ) => {
+  const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
 
     // clear individual field error
-    if (
-      errors[
-        e.target.name
-      ]
-    ) {
+    if (errors[e.target.name]) {
       setErrors({
         ...errors,
-        [e.target.name]:
-          "",
+        [e.target.name]: "",
       });
     }
   };
 
-  const handleSubmit =
-    async (e) => {
-      e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-      const validationErrors =
-        validateForm(
-          loginFields,
-          formData
-        );
+    const validationErrors = validateForm(loginFields, formData);
 
-      if (
-        Object.keys(
-          validationErrors
-        ).length > 0
-      ) {
-        setErrors(
-          validationErrors
-        );
-        return;
-      }
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
 
-      try {
-        await dispatch(
-          loginUser(
-            formData
-          )
-        ).unwrap();
+    try {
+      await dispatch(loginUser(formData)).unwrap();
 
-        showSuccess(
-          "Login successful"
-        );
+      showSuccess("Login successful");
 
-        navigate(
-          "/products"
-        );
-      } catch (err) {
-        showError(
-          err.message ||
-            "Login failed"
-        );
-      }
-    };
+      navigate("/products");
+    } catch (err) {
+      showError(err.message || "Login failed");
+    }
+  };
 
   return (
     <Box
       sx={{
         minHeight: "100vh",
         display: "flex",
-        background:
-          "linear-gradient(135deg,#e3f2fd,#f8fafc)",
+        background: "linear-gradient(135deg,#e3f2fd,#f8fafc)",
       }}
     >
       {/* LEFT PANEL */}
@@ -157,29 +77,18 @@ function Login() {
         sx={{
           flex: 1,
           display: "flex",
-          alignItems:
-            "center",
-          justifyContent:
-            "center",
+          alignItems: "center",
+          justifyContent: "center",
           p: 6,
         }}
       >
         <Box>
-          <Typography
-            variant="h3"
-            fontWeight="bold"
-            mb={2}
-          >
+          <Typography variant="h3" fontWeight="bold" mb={2}>
             Welcome Back
           </Typography>
 
-          <Typography
-            variant="h6"
-            color="text.secondary"
-          >
-            Manage users and
-            products with a clean
-            admin dashboard.
+          <Typography variant="h6" color="text.secondary">
+            Manage users and products with a clean admin dashboard.
           </Typography>
         </Box>
       </Box>
@@ -189,10 +98,8 @@ function Login() {
         sx={{
           flex: 1,
           display: "flex",
-          alignItems:
-            "center",
-          justifyContent:
-            "center",
+          alignItems: "center",
+          justifyContent: "center",
           p: 4,
         }}
       >
@@ -202,16 +109,10 @@ function Login() {
             width: 420,
             p: 5,
             borderRadius: 4,
-            boxShadow:
-              "0 12px 40px rgba(0,0,0,0.08)",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.08)",
           }}
         >
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-            mb={1}
-            align="center"
-          >
+          <Typography variant="h4" fontWeight="bold" mb={1} align="center">
             Login
           </Typography>
 
@@ -224,38 +125,19 @@ function Login() {
             Sign in to continue
           </Typography>
 
-          <form
-            onSubmit={
-              handleSubmit
-            }
-          >
+          <form onSubmit={handleSubmit}>
             <FormBuilder
-              fields={
-                loginFields
-              }
-              data={
-                formData
-              }
-              errors={
-                errors
-              }
-              onChange={
-                handleChange
-              }
+              fields={loginFields}
+              data={formData}
+              errors={errors}
+              onChange={handleChange}
             />
 
-            <ContainedButton type="submit">
-              Login
-            </ContainedButton>
+            <ContainedButton type="submit">Login</ContainedButton>
           </form>
 
-          <Typography
-            mt={3}
-            textAlign="center"
-            color="text.secondary"
-          >
-            Don't have an
-            account?{" "}
+          <Typography mt={3} textAlign="center" color="text.secondary">
+            Don't have an account?{" "}
             <MuiLink
               component={Link}
               to="/signup"

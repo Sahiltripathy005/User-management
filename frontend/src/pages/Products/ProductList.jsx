@@ -10,9 +10,7 @@ function ProductList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { products, loading } = useSelector(
-    (state) => state.products
-  );
+  const { products, loading } = useSelector((state) => state.products);
 
   useEffect(() => {
     dispatch(fetchProducts());
@@ -28,9 +26,7 @@ function ProductList() {
           title={p.name}
           price={p.price}
           image={p.image}
-          onClick={() =>
-            navigate(`/products/${p._id}`)
-          }
+          onClick={() => navigate(`/products/${p._id}`)}
         />
       ))}
     </Box>

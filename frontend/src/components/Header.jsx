@@ -17,7 +17,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { logoutUser } from "../features/auth/authSlice";
-
+import Badge from "@mui/material/Badge";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import ContainedButton from "./Common/ContainedButton";
 function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -28,6 +30,7 @@ function Header() {
   const navigate = useNavigate();
 
   const { user } = useSelector((state) => state.auth);
+  const { items } = useSelector((state) => state.cart);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -80,6 +83,15 @@ function Header() {
         >
           User Manager Pro
         </Typography>
+        <IconButton sx={{ mr: 2 }} onClick={() => navigate("/cart")}>
+          <Badge badgeContent={items.length} color="error">
+            <ShoppingCartIcon
+              sx={{
+                color: "white",
+              }}
+            />
+          </Badge>
+        </IconButton>
 
         {/* USER / GUEST */}
         {user?._id ? (
@@ -102,21 +114,16 @@ function Header() {
             </Menu>
           </Box>
         ) : (
-          <Button
-            variant="contained"
+          <ContainedButton
             onClick={() => navigate("/login")}
             sx={{
-              bgcolor: "white",
-              color: "#1976d2",
-              fontWeight: 600,
+              width: "auto",
+              mt: 0,
               px: 3,
-              "&:hover": {
-                bgcolor: "#f5f5f5",
-              },
             }}
           >
             Login
-          </Button>
+          </ContainedButton>
         )}
       </Toolbar>
     </AppBar>

@@ -1,12 +1,4 @@
-import {
-  Box,
-  Paper,
-  Typography,
-  Avatar,
-  Divider,
-  Chip,
-  Button,
-} from "@mui/material";
+import { Box, Paper, Typography, Avatar, Divider, Chip } from "@mui/material";
 
 import { useSelector, useDispatch } from "react-redux";
 
@@ -22,6 +14,8 @@ import { showSuccess, showError } from "../utils/toast";
 import ChangePasswordForm from "../components/Common/ChangePasswordForm";
 
 import { changePassword } from "../features/auth/authSlice";
+import ContainedButton from "../components/Common/ContainedButton";
+import OutlinedButton from "../components/Common/OutlinedButton";
 
 function Profile() {
   const dispatch = useDispatch();
@@ -217,21 +211,27 @@ function Profile() {
                   gap: 2,
                 }}
               >
-                <Button
-                  variant="contained"
-                  size="large"
+                <ContainedButton
                   onClick={() => setEditing(true)}
+                  sx={{
+                    width: "auto",
+                    mt: 0,
+                    px: 3,
+                  }}
                 >
                   Edit Profile
-                </Button>
+                </ContainedButton>
 
-                <Button
-                  variant="outlined"
-                  size="large"
+                <OutlinedButton
                   onClick={() => setPasswordMode(true)}
+                  sx={{
+                    width: "auto",
+                    mt: 0,
+                    px: 3,
+                  }}
                 >
                   Change Password
-                </Button>
+                </OutlinedButton>
               </Box>
             </>
           )}

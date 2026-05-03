@@ -1,9 +1,9 @@
 import { Button } from "@mui/material";
 
-function ContainedButton({ children, sx = {}, ...props }) {
+function OutlinedButton({ children, sx = {}, ...props }) {
   return (
     <Button
-      variant="contained"
+      variant="outlined"
       fullWidth
       sx={{
         mt: 2,
@@ -20,4 +20,4 @@ function ContainedButton({ children, sx = {}, ...props }) {
   );
 }
 
-export default ContainedButton;
+export default OutlinedButton;

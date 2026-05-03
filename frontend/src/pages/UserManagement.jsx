@@ -17,63 +17,43 @@ import userFields from "../components/Management/UserFormFields";
 import CommonModal from "../components/Common/CommonModal";
 import ConfirmModal from "../components/Common/ConfirmModal";
 
-import {
-  showSuccess,
-  showError,
-} from "../utils/toast";
-
+import { showSuccess, showError } from "../utils/toast";
+import { validateForm } from "../utils/validateForm";
 function UserManagement() {
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
 
-  const { users } = useSelector(
-    (state) => state.users
-  );
+  const { users } = useSelector((state) => state.users);
 
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
-  const [openAdd, setOpenAdd] =
-    useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
 
-  const [openEdit, setOpenEdit] =
-    useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
-  const [confirmOpen, setConfirmOpen] =
-    useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const [deleteId, setDeleteId] =
-    useState(null);
+  const [deleteId, setDeleteId] = useState(null);
 
-  const [editId, setEditId] =
-    useState(null);
+  const [editId, setEditId] = useState(null);
 
-  const [formData, setFormData] =
-    useState({
-      name: "",
-      email: "",
-      phone: "",
-      age: "",
-      comments: "",
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    age: "",
+    comments: "",
+  });
 
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
 
-  const filteredUsers =
-    users.filter(
-      (user) =>
-        user.name
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          ) ||
-        user.email
-          .toLowerCase()
-          .includes(
-            search.toLowerCase()
-          )
-    );
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase()),
+  );
 
   const resetForm = () => {
     setFormData({
@@ -88,27 +68,33 @@ function UserManagement() {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]:
-        e.target.value,
+      [e.target.name]: e.target.value,
     });
+
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: "",
+    }));
   };
 
   const handleAdd = async () => {
-    try {
-    await dispatch(
-        addUser(formData)
-    ).unwrap();
+    const validationErrors = validateForm(userFields, formData);
 
-    showSuccess(
-        "User added successfully"
-    );
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      await dispatch(addUser(formData)).unwrap();
+
+      showSuccess("User added successfully");
     } catch {
-    showError(
-        "Failed to add user"
-    );
+      showError("Failed to add user");
     }
 
     resetForm();
+    setErrors({});
     setOpenAdd(false);
   };
 
@@ -119,25 +105,29 @@ function UserManagement() {
   };
 
   const handleUpdate = async () => {
-    try {
-    await dispatch(
-        editUser({
-        id: editId,
-        data: formData,
-        })
-    ).unwrap();
+    const validationErrors = validateForm(userFields, formData);
 
-    showSuccess(
-        "User updated successfully"
-    );
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    try {
+      await dispatch(
+        editUser({
+          id: editId,
+          data: formData,
+        }),
+      ).unwrap();
+
+      showSuccess("User updated successfully");
     } catch {
-    showError(
-        "Failed to update user"
-    );
+      showError("Failed to update user");
     }
 
     setOpenEdit(false);
     resetForm();
+    setErrors({});
   };
 
   const handleDeleteAsk = (id) => {
@@ -147,17 +137,11 @@ function UserManagement() {
 
   const handleDelete = async () => {
     try {
-    await dispatch(
-        deleteUser(deleteId)
-    ).unwrap();
+      await dispatch(deleteUser(deleteId)).unwrap();
 
-    showSuccess(
-        "User deleted successfully"
-    );
+      showSuccess("User deleted successfully");
     } catch {
-    showError(
-        "Failed to delete user"
-    );
+      showError("Failed to delete user");
     }
 
     setConfirmOpen(false);
@@ -169,70 +153,54 @@ function UserManagement() {
       <PageHeader
         title="User Management"
         buttonText="Add User"
-        onClick={() =>
-          setOpenAdd(true)
-        }
+        onClick={() => setOpenAdd(true)}
       />
 
       {/* SEARCH */}
       <SearchBar
         label="Search User"
         value={search}
-        onChange={(e) =>
-          setSearch(
-            e.target.value
-          )
-        }
+        onChange={(e) => setSearch(e.target.value)}
       />
 
       {/* TABLE */}
       <UserTable
         users={filteredUsers}
         onEdit={handleEdit}
-        onDelete={
-          handleDeleteAsk
-        }
+        onDelete={handleDeleteAsk}
       />
 
       {/* ADD USER MODAL */}
       <CommonModal
         open={openAdd}
-        handleClose={() =>
-          setOpenAdd(false)
-        }
+        handleClose={() => setOpenAdd(false)}
         title="Add User"
         fields={userFields}
         data={formData}
         onChange={handleChange}
         onSubmit={handleAdd}
         submitText="Add"
+        errors={errors}
       />
 
       {/* EDIT USER MODAL */}
       <CommonModal
         open={openEdit}
-        handleClose={() =>
-          setOpenEdit(false)
-        }
+        handleClose={() => setOpenEdit(false)}
         title="Edit User"
         fields={userFields}
         data={formData}
         onChange={handleChange}
-        onSubmit={
-          handleUpdate
-        }
+        onSubmit={handleUpdate}
         submitText="Update"
+        errors={errors}
       />
 
       {/* DELETE CONFIRM MODAL */}
       <ConfirmModal
         open={confirmOpen}
-        onCancel={() =>
-          setConfirmOpen(false)
-        }
-        onConfirm={
-          handleDelete
-        }
+        onCancel={() => setConfirmOpen(false)}
+        onConfirm={handleDelete}
         title="Delete User"
         message="Are you sure you want to delete this user?"
       />

@@ -3,8 +3,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
 } from "@mui/material";
+
+import FormBuilder from "./FormBuilder";
+import ContainedButton from "./ContainedButton";
+import OutlinedButton from "./OutlinedButton";
 
 const CommonModal = ({
   open,
@@ -22,29 +25,38 @@ const CommonModal = ({
       <DialogTitle>{title}</DialogTitle>
 
       <DialogContent>
-        {fields.map((field, index) => {
-          const Component = field.component;
-
-          return (
-            <Component
-              key={index}
-              {...field.props}
-              name={field.name}
-              value={data[field.name] || ""}
-              onChange={onChange}
-              error={!!errors[field.name]}
-              helperText={errors[field.name]}
-            />
-          );
-        })}
+        <FormBuilder
+          fields={fields}
+          data={data}
+          errors={errors}
+          onChange={onChange}
+        />
       </DialogContent>
 
-      <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+      <DialogActions
+        sx={{
+          px: 3,
+          pb: 3,
+          gap: 2,
+        }}
+      >
+        <OutlinedButton
+          onClick={handleClose}
+          sx={{
+            mt: 0,
+          }}
+        >
+          Cancel
+        </OutlinedButton>
 
-        <Button variant="contained" onClick={onSubmit}>
+        <ContainedButton
+          onClick={onSubmit}
+          sx={{
+            mt: 0,
+          }}
+        >
           {submitText}
-        </Button>
+        </ContainedButton>
       </DialogActions>
     </Dialog>
   );

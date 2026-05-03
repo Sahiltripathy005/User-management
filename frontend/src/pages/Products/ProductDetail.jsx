@@ -1,55 +1,36 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { useParams, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  fetchProductById,
-} from "../../features/product/productSlice";
+import { fetchProductById } from "../../features/product/productSlice";
 
 import FallbackImage from "../../components/Common/FallbackImage";
 
-import {
-  Box,
-  Typography,
-  Button,
-  CircularProgress,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, CircularProgress, Paper } from "@mui/material";
+import ContainedButton from "../../components/Common/ContainedButton";
+import OutlinedButton from "../../components/Common/OutlinedButton";
 
+import { addToCart, fetchCart } from "../../features/cart/cartSlice";
+import { showError } from "../../utils/toast";
 function ProductDetail() {
-  const { id } =
-    useParams();
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-  const dispatch =
-    useDispatch();
+  const dispatch = useDispatch();
 
-  const {
-    selectedProduct,
-    loading,
-  } = useSelector(
-    (state) =>
-      state.products
-  );
+  const { selectedProduct, loading } = useSelector((state) => state.products);
 
   useEffect(() => {
-    dispatch(
-      fetchProductById(id)
-    );
+    dispatch(fetchProductById(id));
   }, [dispatch, id]);
 
-  if (
-    loading ||
-    !selectedProduct
-  ) {
+  const { user } = useSelector((state) => state.auth);
+  if (loading || !selectedProduct) {
     return (
       <Box
         sx={{
           display: "flex",
-          justifyContent:
-            "center",
+          justifyContent: "center",
           mt: 5,
         }}
       >
@@ -58,12 +39,25 @@ function ProductDetail() {
     );
   }
 
+  const handleAddToCart = async () => {
+    if (!user?._id) {
+      showError("Please login first");
+
+      navigate("/login");
+
+      return;
+    }
+
+    await dispatch(addToCart(selectedProduct._id));
+
+    dispatch(fetchCart());
+  };
+
   return (
     <Box
       sx={{
         display: "flex",
-        justifyContent:
-          "center",
+        justifyContent: "center",
         mt: 5,
       }}
     >
@@ -74,39 +68,28 @@ function ProductDetail() {
           maxWidth: 900,
           display: "flex",
           borderRadius: 4,
-          overflow:
-            "hidden",
-          background:
-            "linear-gradient(to right, #f5f7fa, #e3f2fd)",
+          overflow: "hidden",
+          background: "linear-gradient(to right, #f5f7fa, #e3f2fd)",
         }}
       >
         {/* LEFT IMAGE */}
         <Box
           sx={{
             flex: 1,
-            background:
-              "#fff",
+            background: "#fff",
             display: "flex",
-            alignItems:
-              "center",
-            justifyContent:
-              "center",
+            alignItems: "center",
+            justifyContent: "center",
             p: 3,
           }}
         >
           <FallbackImage
-            src={
-              selectedProduct.image
-            }
-            alt={
-              selectedProduct.name
-            }
+            src={selectedProduct.image}
+            alt={selectedProduct.name}
             style={{
               width: "100%",
-              maxHeight:
-                "300px",
-              objectFit:
-                "contain",
+              maxHeight: "300px",
+              objectFit: "contain",
             }}
           />
         </Box>
@@ -117,67 +100,52 @@ function ProductDetail() {
             flex: 1,
             p: 4,
             display: "flex",
-            flexDirection:
-              "column",
-            justifyContent:
-              "center",
+            flexDirection: "column",
+            justifyContent: "center",
           }}
         >
           {/* NAME */}
-          <Typography
-            variant="h4"
-            fontWeight="bold"
-            mb={2}
-          >
-            {
-              selectedProduct.name
-            }
+          <Typography variant="h4" fontWeight="bold" mb={2}>
+            {selectedProduct.name}
           </Typography>
 
           {/* PRICE */}
-          <Typography
-            variant="h5"
-            color="primary"
-            fontWeight="bold"
-            mb={2}
-          >
-            ₹{" "}
-            {
-              selectedProduct.price
-            }
+          <Typography variant="h5" color="primary" fontWeight="bold" mb={2}>
+            ₹ {selectedProduct.price}
           </Typography>
 
           {/* DESCRIPTION */}
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            mb={3}
-          >
-            {selectedProduct.description ||
-              "No description available"}
+          <Typography variant="body1" color="text.secondary" mb={3}>
+            {selectedProduct.description || "No description available"}
           </Typography>
 
           {/* ACTIONS */}
           <Box
             sx={{
-              display:
-                "flex",
+              display: "flex",
               gap: 2,
             }}
           >
-            <Button
-              variant="contained"
-              size="large"
+            <ContainedButton
+              sx={{
+                width: "auto",
+                mt: 0,
+                px: 4,
+              }}
             >
               Buy Now
-            </Button>
+            </ContainedButton>
 
-            <Button
-              variant="outlined"
-              size="large"
+            <OutlinedButton
+              onClick={handleAddToCart}
+              sx={{
+                width: "auto",
+                mt: 0,
+                px: 4,
+              }}
             >
-              Add to Cart
-            </Button>
+              Add To Cart
+            </OutlinedButton>
           </Box>
         </Box>
       </Paper>

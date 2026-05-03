@@ -14,18 +14,22 @@ import { useDispatch } from "react-redux";
 
 import { useNavigate, Link } from "react-router-dom";
 
-import InputField from "../../components/Common/InputField";
 import ContainedButton from "../../components/Common/ContainedButton";
 
 import { signupUser } from "../../features/auth/authSlice";
 
 import { showSuccess, showError } from "../../utils/toast";
+import FormBuilder from "../../components/Common/FormBuilder";
+
+import signupFields from "../../components/forms/signupFields";
+
+import { validateForm } from "../../utils/validateForm";
 
 function Signup() {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -42,18 +46,31 @@ function Signup() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: "",
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const validationErrors = validateForm(signupFields, formData);
+
     if (formData.password !== formData.confirmPassword) {
-      showError("Passwords do not match");
+      validationErrors.confirmPassword = "Passwords do not match";
+    }
+
+    if (Object.keys(validationErrors).length) {
+      setErrors(validationErrors);
       return;
     }
 
     try {
-      await dispatch(signupUser(formData)).unwrap();
+      const { confirmPassword, ...payload } = formData;
+
+      await dispatch(signupUser(payload)).unwrap();
 
       showSuccess("Signup successful");
 
@@ -126,33 +143,10 @@ function Signup() {
 
           <form onSubmit={handleSubmit}>
             {/* REQUIRED */}
-            <InputField
-              label="Name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-            />
-
-            <InputField
-              label="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-
-            <InputField
-              label="Password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-
-            <InputField
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              value={formData.confirmPassword}
+            <FormBuilder
+              fields={signupFields}
+              data={formData}
+              errors={errors}
               onChange={handleChange}
             />
 
@@ -182,30 +176,6 @@ function Signup() {
                 <MenuItem value="admin">Admin</MenuItem>
               </Select>
             </FormControl>
-
-            {/* OPTIONAL */}
-            <InputField
-              label="Phone (Optional)"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-            />
-
-            <InputField
-              label="Age (Optional)"
-              name="age"
-              value={formData.age}
-              onChange={handleChange}
-            />
-
-            <InputField
-              label="Comments (Optional)"
-              name="comments"
-              value={formData.comments}
-              onChange={handleChange}
-              multiline
-              rows={3}
-            />
 
             <ContainedButton type="submit">Signup</ContainedButton>
           </form>

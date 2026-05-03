@@ -16,6 +16,7 @@ import ProductManagement from "../pages/ProductManagement";
 
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 import AdminRoute from "../components/auth/AdminRoute";
+import Cart from "../pages/Cart";
 
 function AppRoutes() {
   return (
@@ -30,7 +31,7 @@ function AppRoutes() {
         <Route path="/login" element={<Login />} />
 
         <Route path="/signup" element={<Signup />} />
-
+        <Route path="/cart" element={<Cart />} />
         {/* PUBLIC ROUTES */}
         <Route element={<Layout />}>
           <Route path="/products" element={<ProductList />} />
